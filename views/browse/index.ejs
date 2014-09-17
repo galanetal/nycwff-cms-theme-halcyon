@@ -1,0 +1,90 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<h1> Browse <%= request.params.entityitems %> Items </h1>
+
+	<div id="filters" class="button-group">
+	  <button data-filter="*">show all</button>
+	  <button data-filter=".twitter">twitter</button>
+	  <button data-filter=".opentable">opentable</button>
+	  <button data-filter=".twitter, .opentable">twitter & opentable</button>
+	  <!--<button data-filter=".metal:not(.transition)">metal but not transition</button>-->
+	</div>
+			<!--
+			<div class="col-12 item">
+				<% if(tags && tags.length>0){
+					tags.forEach(function(tag){
+						if(request.params.entitytype==="authors"){
+							%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="label label-primary"><%= tag.username %></a> <%
+						}
+						else{
+							%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="label label-primary"><%= tag.title %></a> <%
+						}
+					});
+				} %>
+			</div>
+			-->
+
+	<div id="container">
+		<% if(docs && docs.length>0){
+			var fullitem=false;
+			var collectionitem=false;
+			docs.forEach(function(item){
+
+				if(typeof item._id=='object' && item._id!=null){
+
+
+					var tags = [];
+					for(var t in item.tags ){
+						if( typeof item.tags[t].title != 'undefined' && t!='_parent'){
+							tags.push(item.tags[t].title);
+						}
+					} 
+					%>
+					<div class="col-12 item <%- tags.join(' ') %>">
+	          		<% include ../shared/partial/_item_micro %>
+	        		</div>
+	        		<%
+				}
+			});
+			}else{%>
+			<div class="row">
+        <div class="jumbotron">
+          <h1>No Docs!</h1>
+        </div>
+      </div>
+		<%}%>
+	</div>
+
+
+<% include ../shared/scripts %>
+
+<script src="http://isotope.metafizzy.co/isotope.pkgd.js"></script>
+
+<style>
+.item { 
+width: 25%; 
+padding: 8px;
+margin: 8px;
+}
+.item.w2 { width: 50%; }
+</style>
+
+<script>
+var $container = $('#container');
+// init
+$container.isotope({
+  // options
+  itemSelector: '.item',
+  layoutMode: 'fitRows'
+});
+
+
+// filter items on button click
+$('#filters').on( 'click', 'button', function() {
+  var filterValue = $(this).attr('data-filter');
+  $container.isotope({ filter: filterValue });
+});
+
+</script>
+
+<% include ../shared/footer %>
